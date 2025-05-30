@@ -1,0 +1,194 @@
+<?php
+// templates/footer.php
+
+// Mensagem flash (se existir na sessão, será exibida pelo JavaScript showGlobalToast)
+$flashMessage = null;
+if (isset($_SESSION['flash_message'])) {
+    $flashMessage = $_SESSION['flash_message'];
+    unset($_SESSION['flash_message']); // Limpa após ler
+}
+?>
+            </main> {/* Fecha a tag <main> aberta em header.php */}
+        </div> {/* Fecha a div class="flex-grow flex flex-col..." */}
+    </div> {/* Fecha a div class="flex h-screen..." */}
+
+    {/* Modais Globais */}
+    <div id="footer-modals-container">
+        <div id="password-generator-modal-backdrop" class="fixed inset-0 bg-gray-800 bg-opacity-75 backdrop-blur-sm flex items-center justify-center hidden z-[1050] transition-opacity duration-300 ease-in-out opacity-0">
+          <div id="password-generator-modal-content" class="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 ease-in-out scale-95 opacity-0">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold text-slate-800 flex items-center">
+                    <i data-lucide="key-round" class="w-6 h-6 mr-2 text-sky-600"></i>Gerador de Senhas
+                </h3>
+                <button type="button" id="close-password-generator-modal-btn" class="p-2 -m-2 text-slate-400 hover:text-slate-600 rounded-full transition-colors" aria-label="Fechar modal">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                {/* Gerador de Senha por Data/Hora */}
+                <div class="flex space-x-3 mb-4">
+                    <button type="button" id="senhaPayBtn" class="flex-1 px-4 py-2.5 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 active:scale-95 flex items-center justify-center text-sm">
+                        <i data-lucide="dollar-sign" class="w-4 h-4 mr-2"></i>Gerar Senha PAY
+                    </button>
+                    <button type="button" id="senhaAutomacaoBtn" class="flex-1 px-4 py-2.5 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 active:scale-95 flex items-center justify-center text-sm">
+                        <i data-lucide="settings-2" class="w-4 h-4 mr-2"></i>Gerar Senha AUTO
+                    </button>
+                </div>
+                <div id="senhaGeradaContainer" class="mt-4 p-4 border border-slate-300 rounded-lg bg-slate-50 hidden">
+                    <p id="senhaGeradaDisplay" class="text-lg font-mono text-slate-700 text-center"></p>
+                    <button type="button" id="copiarSenhaBtnModal" class="mt-3 w-full px-4 py-2 bg-slate-600 text-white font-medium rounded-lg hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 active:scale-95 flex items-center justify-center text-sm">
+                        <i data-lucide="copy" class="w-4 h-4 mr-2"></i>Copiar Senha (Data/Hora)
+                    </button>
+                </div>
+                <hr class="my-4 border-slate-300">
+                {/* Gerador de Senhas Fortes */}
+                <p class="text-sm font-medium text-slate-600 text-center mb-3 pt-2">Ou gere uma senha aleatória forte:</p>
+                <div class="relative">
+                    <input type="text" id="pg-senhaGerada" readonly
+                           class="w-full p-3 pr-12 border border-slate-300 rounded-lg text-slate-700 bg-slate-50 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-lg"
+                           placeholder="Sua senha segura aparecerá aqui...">
+                    <button type="button" id="pg-copiarSenhaBtn" title="Copiar Senha Forte"
+                            class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-500 hover:text-sky-600 transition-colors rounded-r-lg">
+                        <i data-lucide="copy" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+                    <div>
+                        <label for="pg-comprimento" class="block text-sm font-medium text-slate-700 mb-1">Comprimento: <span id="pg-comprimentoValor" class="font-semibold text-sky-600">16</span></label>
+                        <input type="range" id="pg-comprimento" min="8" max="32" value="16"
+                               class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-sky-600">
+                    </div>
+                    <button type="button" id="pg-gerarSenhaBtn"
+                            class="w-full sm:w-auto sm:ml-auto px-5 py-2.5 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 flex items-center justify-center">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 mr-2"></i>Gerar Nova Forte
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-2 text-sm">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="pg-incluirMaiusculas" checked class="form-checkbox h-4 w-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500">
+                        <span class="text-slate-700">Maiúsculas</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="pg-incluirNumeros" checked class="form-checkbox h-4 w-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500">
+                        <span class="text-slate-700">Números</span>
+                    </label>
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="pg-incluirSimbolos" checked class="form-checkbox h-4 w-4 text-sky-600 border-slate-300 rounded focus:ring-sky-500">
+                        <span class="text-slate-700">Símbolos</span>
+                    </label>
+                </div>
+                <div id="pg-forcaSenha" class="text-sm mt-2 h-6"></div>
+            </div>
+          </div>
+        </div>
+
+        <?php if (function_exists('can') && can('atualizar', 'colaboradores')): // Só renderiza o modal se o usuário puder atualizar ?>
+        <div id="edit-collaborator-modal" class="fixed inset-0 bg-slate-800 bg-opacity-60 backdrop-blur-sm flex items-center justify-center hidden z-[1050] p-4 transition-opacity duration-300 ease-in-out opacity-0">
+          <div class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 ease-in-out scale-95 opacity-0" id="edit-collaborator-modal-content">
+            <form id="edit-collaborator-form">
+              <input type="hidden" id="edit-colab-id" name="colab_id">
+              <input type="hidden" id="edit-csrf-token" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token_colab_manage'] ?? ''); ?>">
+              <div class="flex justify-between items-center pb-3 border-b border-slate-200 mb-5">
+                <h2 class="text-xl font-semibold text-slate-800 flex items-center">
+                    <i data-lucide="user-cog" class="w-5 h-5 mr-2 text-sky-600"></i>Editar Colaborador
+                </h2>
+                <button type="button" class="p-1.5 -m-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors modal-close-btn-colab-edit" title="Fechar">
+                  <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+              </div>
+              <div class="space-y-4">
+                <div>
+                  <label for="edit-nome_completo" class="block text-sm font-medium text-slate-700 mb-1">Nome Completo <span class="text-red-500">*</span></label>
+                  <input type="text" id="edit-nome_completo" name="nome_completo" class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm" required>
+                </div>
+                <div>
+                  <label for="edit-email" class="text-sm font-medium text-slate-700 mb-1">Email</label>
+                  <input type="email" id="edit-email" name="email" class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
+                </div>
+                <div>
+                  <label for="edit-cargo" class="text-sm font-medium text-slate-700 mb-1">Cargo</label>
+                  <input type="text" id="edit-cargo" name="cargo" class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
+                </div>
+              </div>
+              <div class="mt-6 flex justify-end gap-3">
+                <button type="button" id="cancel-edit-colab-button" class="modal-close-btn-colab-edit inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-500 transition-colors">
+                  <i data-lucide="x-circle" class="w-4 h-4 mr-2"></i> Cancelar
+                </button>
+                <button type="submit" id="save-edit-colab-button" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-500 transition-colors active:scale-95">
+                  <i data-lucide="check-circle" class="w-4 h-4 mr-2"></i> Salvar Alterações
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if (function_exists('can') && can('executar', 'backup')): ?>
+        <div id="backup-modal-backdrop" class="fixed inset-0 bg-gray-600 bg-opacity-50 backdrop-blur-sm flex items-center justify-center hidden z-[1055] p-4 transition-opacity duration-300 ease-in-out opacity-0">
+            <div class="modal-content-backup bg-white p-6 rounded-xl shadow-2xl w-full max-w-lg transform transition-all duration-300 ease-in-out scale-95 opacity-0">
+                <div class="flex justify-between items-center pb-3 border-b">
+                    <h3 id="backup-modal-title" class="text-xl font-semibold text-slate-800 flex items-center">
+                        <i data-lucide="database-backup" class="w-5 h-5 mr-2 text-sky-600"></i>Backup
+                    </h3>
+                    <button type="button" id="backup-modal-close-btn-icon" class="text-gray-400 hover:text-gray-600 p-1 -m-1 rounded-full hover:bg-slate-100" style="display: none;">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="mt-4 mb-5">
+                    <p id="backup-modal-message" class="text-sm text-slate-600"></p>
+                    <div id="backup-progress-bar-container" class="w-full bg-slate-200 rounded-full h-2.5 mt-3" style="display: none;">
+                        <div id="backup-progress-bar" class="bg-sky-600 h-2.5 rounded-full text-xs font-medium text-sky-100 text-center p-0.5 leading-none" style="width: 0%">0%</div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <a href="#" id="backup-download-link" target="_blank" style="display: none;" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-green-500">
+                        <i data-lucide="download" class="w-4 h-4 mr-2"></i>Baixar Backup
+                    </a>
+                    <button type="button" id="backup-modal-close-btn" style="display: none;" class="inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-500">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div> {/* Fim #footer-modals-container */}
+
+
+    <script src="<?php echo BASE_URL; ?>/public/js/main.js" type="module"></script>
+    <?php
+    if (isset($pageSpecificJs) && is_array($pageSpecificJs)) {
+        foreach ($pageSpecificJs as $jsFile) {
+            if (preg_match('/^(http:\/\/|https:\/\/|\/\/)/i', $jsFile)) {
+                 echo '<script src="' . htmlspecialchars($jsFile) . '" type="module"></script>' . "\n";
+            } else {
+                echo '<script src="' . BASE_URL . '/' . ltrim(htmlspecialchars($jsFile), '/') . '" type="module"></script>' . "\n";
+            }
+        }
+    }
+    ?>
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Exibir flash messages, se houver
+            <?php if ($flashMessage): ?>
+                if (typeof window.showGlobalToast === 'function') {
+                    window.showGlobalToast("<?php echo addslashes(htmlspecialchars($flashMessage['message'])); ?>", "<?php echo addslashes(htmlspecialchars($flashMessage['type'])); ?>");
+                } else {
+                    // Fallback se showGlobalToast não estiver disponível (improvável se main.js for carregado)
+                    alert("<?php echo addslashes(htmlspecialchars($flashMessage['type'])); ?>: <?php echo addslashes(htmlspecialchars($flashMessage['message'])); ?>");
+                }
+            <?php endif; ?>
+
+            // Lógica Lucide Icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+            const observer = new MutationObserver(mutations => {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
+    </body>
+</html>
