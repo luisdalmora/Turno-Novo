@@ -53,7 +53,7 @@ export function initScriptsPage() {
       const ac = r.insertCell();
       ac.className = "px-4 py-3 text-center text-sm space-x-1 sm:space-x-2";
       if (SIMULATE_ADMIN_SCRIPTS) {
-        ac.innerHTML = `<button class="action-edit-script p-1 sm:p-1.5 text-indigo-600 hover:text-indigo-800" title="Editar Script" data-script-id="<span class="math-inline">\{s\.id\}"\><i data\-lucide\="edit\-3" class\="w\-3\.5 h\-3\.5 sm\:w\-4 sm\:h\-4 pointer\-events\-none"\></i\></button\><button class\="action\-delete\-script p\-1 sm\:p\-1\.5 text\-red\-600 hover\:text\-red\-800" title\="Excluir Script" data\-script\-id\="</span>{s.id}"><i data-lucide="trash-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4 pointer-events-none"></i></button>`;
+        ac.innerHTML = `<button class="action-edit-script p-1 sm:p-1.5 text-indigo-600 hover:text-indigo-800" title="Editar Script" data-script-id="<span class="math-inline">\{s\.id\}"\><i data\-lucide\="edit\-3" class\="w\-3\.5 h\-3\.5 sm\:w\-4 sm\:h\-4 pointer\-events\-none"\></i\></button\><button class\="action\-delete\-script p\-1 sm\:p\-1\.5 text\-red\-600 hover\:text\-red\-800" title\="Excluir Script" data\-script\-id\="</span>"><i data-lucide="trash-2" class="w-3.5 h-3.5 sm:w-4 sm:h-4 pointer-events-none"></i></button>`;
       } else {
         ac.innerHTML = `<span class="text-xs text-slate-400">N/A</span>`;
       }
