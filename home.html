@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sim Posto - Painel Principal</title>
+  <link href="./src/output.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <script defer src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    @media (max-width: 767px) {
+
+      /* md breakpoint */
+      .mobile-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        z-index: 40;
+      }
+
+      .mobile-sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 30;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+      }
+
+      .sidebar-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+    }
+
+    .custom-scrollbar-thin::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .custom-scrollbar-thin::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    .custom-scrollbar-thin::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+
+    .custom-scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+
+    .body-fade-in {
+      opacity: 0;
+      transition: opacity 0.4s ease-in-out;
+    }
+
+    .body-visible {
+      opacity: 1;
+    }
+
+    .tab-button.active-tab {}
+
+    /* Estilo para aba ativa é aplicado via JS */
+  </style>
+</head>
+
+<body class="bg-slate-100 font-poppins text-slate-700 body-fade-in">
+
+  <div id="sidebar-overlay" class="sidebar-overlay md:hidden"></div>
+
+  <div class="flex h-screen overflow-hidden">
+    <div id="sidebar-container">
+    </div>
+
+    <div class="flex-grow flex flex-col overflow-y-auto custom-scrollbar-thin">
+      <div id="header-container">
+      </div>
+
+      <main id="main-content-area" class="flex-grow p-4 md:p-6">
+
+        <div id="content-home" class="page-content">
+          <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <h2 class="text-2xl font-semibold text-slate-800 order-2 sm:order-1">Dashboard</h2>
+            <div class="flex items-center gap-2 order-1 sm:order-2 bg-white p-1 rounded-lg shadow">
+              <button id="prev-month-button-dashboard" class="p-2 rounded-md hover:bg-slate-100 text-slate-600"
+                title="Mês Anterior">
+                <i data-lucide="chevron-left" class="w-5 h-5"></i>
+              </button>
+              <span id="current-month-year-display-dashboard"
+                class="text-sm font-medium text-slate-700 w-32 text-center">
+              </span>
+              <button id="next-month-button-dashboard" class="p-2 rounded-md hover:bg-slate-100 text-slate-600"
+                title="Próximo Mês">
+                <i data-lucide="chevron-right" class="w-5 h-5"></i>
+              </button>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 space-y-6">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-base font-medium text-slate-600">Turnos do Mês</h3>
+                    <i data-lucide="calendar-days" class="w-5 h-5 text-sky-500"></i>
+                  </div>
+                  <p class="text-3xl font-bold text-sky-600">--</p>
+                  <p class="text-xs text-slate-500 mt-1">Total de turnos registrados</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-base font-medium text-slate-600">Horas Trabalhadas</h3>
+                    <i data-lucide="clock" class="w-5 h-5 text-green-500"></i>
+                  </div>
+                  <p class="text-3xl font-bold text-green-600">--.- <span class="text-xl">hrs</span></p>
+                  <p class="text-xs text-slate-500 mt-1">Total de horas no mês</p>
+                </div>
+                <div class="bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div class="flex items-center justify-between mb-1">
+                    <h3 class="text-base font-medium text-slate-600">Próximas Ausências</h3>
+                    <i data-lucide="user-x" class="w-5 h-5 text-orange-500"></i>
+                  </div>
+                  <p class="text-3xl font-bold text-orange-500">--</p>
+                  <p class="text-xs text-slate-500 mt-1">Colaboradores com ausências</p>
+                </div>
+              </div>
+              <div class="bg-white p-5 rounded-xl shadow-lg">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="text-lg font-semibold text-slate-700 flex items-center">
+                    <i data-lucide="notebook-pen" class="w-5 h-5 mr-2 text-indigo-500"></i>Observações Gerais
+                  </h3>
+                  <button id="salvar-observacoes-gerais-btn"
+                    class="text-xs bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-1.5 px-3 rounded-md transition-colors flex items-center">
+                    <i data-lucide="save" class="w-3.5 h-3.5 mr-1.5"></i>Salvar
+                  </button>
+                </div>
+                <textarea id="observacoes-gerais-textarea" rows="4"
+                  class="w-full p-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-slate-600 placeholder-slate-400 custom-scrollbar-thin"
+                  placeholder="Digite observações ou lembretes importantes para o mês..."></textarea>
+              </div>
+              <div class="bg-white rounded-xl shadow-lg">
+                <div class="border-b border-slate-200">
+                  <nav class="-mb-px flex space-x-1 sm:space-x-2 px-4" aria-label="Tabs">
+                    <button data-tab-target="#tab-content-turnos-view"
+                      class="tab-button active-tab whitespace-nowrap py-3 px-2 sm:px-3 border-b-2 font-medium text-sm text-sky-600 border-sky-500">
+                      <i data-lucide="calendar-check" class="w-4 h-4 mr-1.5 inline-block"></i>Turnos
+                    </button>
+                    <button data-tab-target="#tab-content-ausencias-view"
+                      class="tab-button whitespace-nowrap py-3 px-2 sm:px-3 border-b-2 font-medium text-sm text-slate-500 hover:text-slate-700 hover:border-slate-300 border-transparent">
+                      <i data-lucide="user-x" class="w-4 h-4 mr-1.5 inline-block"></i>Ausências
+                    </button>
+                    <button data-tab-target="#tab-content-escala-sabados-view"
+                      class="tab-button whitespace-nowrap py-3 px-2 sm:px-3 border-b-2 font-medium text-sm text-slate-500 hover:text-slate-700 hover:border-slate-300 border-transparent">
+                      <i data-lucide="list-checks" class="w-4 h-4 mr-1.5 inline-block"></i>Escala Sábados
+                    </button>
+                  </nav>
+                </div>
+                <div class="p-1 sm:p-2 md:p-4">
+                  <div id="tab-content-turnos-view" class="tab-pane">
+                    <div id="turnos-calendar-view-container" class="bg-slate-50 p-1 sm:p-2 rounded-lg min-h-[200px]">
+                      <p class="text-center text-slate-500 py-8">Calendário de turnos e ausências será carregado aqui...
+                      </p>
+                    </div>
+                  </div>
+                  <div id="tab-content-ausencias-view" class="tab-pane hidden">
+                    <div id="ausencia-setor-table-container" class="max-h-60 overflow-y-auto custom-scrollbar-thin">
+                      <table id="ausencia-setor-table" class="min-w-full text-sm">
+                        <thead class="sticky top-0 bg-slate-100 z-10">
+                          <tr>
+                            <th class="p-2 text-left font-semibold text-slate-600">Data</th>
+                            <th class="p-2 text-left font-semibold text-slate-600">Colaborador</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                          <tr>
+                            <td colspan="2" class="p-2 text-center text-slate-400">Carregando ausências do setor...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div id="tab-content-escala-sabados-view" class="tab-pane hidden">
+                    <div id="escala-sabados-table-container" class="max-h-60 overflow-y-auto custom-scrollbar-thin">
+                      <table id="escala-sabados-table" class="min-w-full text-sm">
+                        <thead class="sticky top-0 bg-slate-100 z-10">
+                          <tr>
+                            <th class="p-2 text-left font-semibold text-slate-600">Sábado</th>
+                            <th class="p-2 text-left font-semibold text-slate-600">Colaborador Escalado</th>
+                          </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                          <tr>
+                            <td colspan="2" class="p-2 text-center text-slate-400">Carregando escala de sábados...</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lg:col-span-1 space-y-6">
+              <div class="bg-white p-5 rounded-xl shadow-lg">
+                <div class="flex items-center justify-between mb-3">
+                  <h3 class="text-lg font-semibold text-slate-700 flex items-center">
+                    <i data-lucide="calendar-heart" class="w-5 h-5 mr-2 text-red-500"></i>Feriados do Mês
+                  </h3>
+                </div>
+                <div id="feriados-table-container" class="max-h-60 overflow-y-auto custom-scrollbar-thin">
+                  <table id="feriados-table" class="min-w-full text-sm">
+                    <thead class="sticky top-0 bg-slate-100 z-10">
+                      <tr>
+                        <th class="p-2 text-left font-semibold text-slate-600">Data</th>
+                        <th class="p-2 text-left font-semibold text-slate-600">Descrição</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200">
+                      <tr>
+                        <td colspan="2" class="p-2 text-center text-slate-400">Carregando feriados...</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="bg-white p-6 rounded-xl shadow-lg">
+                <h3 class="text-lg font-medium text-slate-700 mb-3 flex items-center"><i data-lucide="activity"
+                    class="w-5 h-5 mr-2 text-purple-500"></i>Atividade Recente</h3>
+                <ul class="space-y-2 text-sm">
+                  <li class="text-slate-600"><span class="font-medium text-sky-600">Novo turno</span> adicionado para
+                    João S.</li>
+                  <li class="text-slate-600"><span class="font-medium text-orange-500">Ausência registrada</span> para
+                    Maria P.</li>
+                  <li class="text-slate-600">Relatório de Abril <span class="font-medium text-green-600">gerado</span>.
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="content-relatorios" class="page-content hidden">
+          <section class="bg-white p-4 md:p-6 rounded-xl shadow-lg mb-6">
+            <h2 class="text-xl font-semibold text-slate-800 mb-5 flex items-center">
+              <i data-lucide="filter" class="w-5 h-5 mr-2.5 text-sky-600"></i> Filtros do Relatório
+            </h2>
+            <form id="report-filters-form"
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-4 items-end">
+              <input type="hidden" id="csrf-token-reports" value="dummy_csrf_token_placeholder_reports">
+              <div>
+                <label for="filtro-data-inicio" class="block text-sm font-medium text-slate-700 mb-1">Data
+                  Início:</label>
+                <input type="date" id="filtro-data-inicio" name="filtro-data-inicio"
+                  class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-slate-700"
+                  required>
+              </div>
+              <div>
+                <label for="filtro-data-fim" class="block text-sm font-medium text-slate-700 mb-1">Data Fim:</label>
+                <input type="date" id="filtro-data-fim" name="filtro-data-fim"
+                  class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-slate-700"
+                  required>
+              </div>
+              <div>
+                <label for="filtro-colaborador"
+                  class="block text-sm font-medium text-slate-700 mb-1">Colaborador:</label>
+                <select id="filtro-colaborador" name="filtro-colaborador"
+                  class="form-select block w-full border-slate-300 rounded-md shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm text-slate-700">
+                  <option value="">Todos os Colaboradores</option>
+                </select>
+              </div>
+              <div class="sm:col-span-2 lg:col-span-1">
+                <button type="submit" id="generate-report-button"
+                  class="w-full flex justify-center items-center px-4 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all duration-150 ease-in-out hover:scale-105 active:scale-95"
+                  title="Gerar relatório com os filtros selecionados">
+                  <i data-lucide="search" class="w-4 h-4 mr-2"></i> Gerar Relatório
+                </button>
+              </div>
+            </form>
+          </section>
+          <section class="bg-white p-4 md:p-6 rounded-xl shadow-lg">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
+              <h2 class="text-xl font-semibold text-slate-800 flex items-center">
+                <i data-lucide="list-checks" class="w-5 h-5 mr-2.5 text-sky-600"></i> Resultado do Relatório
+              </h2>
+              <div class="flex gap-2.5 mt-3 sm:mt-0">
+                <button id="export-csv-button"
+                  class="px-3.5 py-2 text-xs font-medium text-white bg-green-600 hover:bg-green-700 rounded-md flex items-center transition-all duration-150 ease-in-out hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                  title="Exportar dados para CSV">
+                  <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-1.5"></i> Exportar CSV
+                </button>
+                <button id="export-pdf-button"
+                  class="px-3.5 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md flex items-center transition-all duration-150 ease-in-out hover:scale-105 active:scale-95 shadow-sm hover:shadow-md"
+                  title="Exportar dados para PDF">
+                  <i data-lucide="file-text" class="w-4 h-4 mr-1.5"></i> Exportar PDF
+                </button>
+              </div>
+            </div>
+            <div id="report-summary" class="mb-5 p-4 bg-sky-50 border border-sky-200 rounded-md text-sm text-sky-700">
+              <p>Utilize os filtros acima e clique em "Gerar Relatório" para visualizar os dados.</p>
+            </div>
+            <div class="overflow-x-auto custom-scrollbar-thin">
+              <table id="report-table" class="min-w-full divide-y divide-slate-200 border border-slate-200">
+                <thead class="bg-slate-50">
+                  <tr>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Data
+                    </th>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                      Colaborador</th>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Hora
+                      Início</th>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Hora Fim
+                    </th>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Duração
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-200">
+                  <tr>
+                    <td colspan="5" class="px-5 py-4 whitespace-nowrap text-sm text-slate-500 text-center">Nenhum
+                      relatório gerado ainda.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div id="content-colaboradores" class="page-content hidden">
+          <section class="bg-white p-4 md:p-6 rounded-xl shadow-lg">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <h2 class="text-xl font-semibold text-slate-800 flex items-center">
+                <i data-lucide="list-ul" class="w-5 h-5 mr-2.5 text-sky-600"></i> Lista de Colaboradores
+              </h2>
+              <a href="cadastrar_colaborador.html"
+                class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-150 ease-in-out hover:scale-105 active:scale-95">
+                <i data-lucide="user-plus" class="w-4 h-4 mr-2"></i> Novo Colaborador
+              </a>
+            </div>
+            <input type="hidden" id="csrf-token-colab-manage" value="dummy_csrf_token_colab_manage">
+            <div class="overflow-x-auto custom-scrollbar-thin">
+              <table id="collaborators-table" class="min-w-full divide-y divide-slate-200 border border-slate-200">
+                <thead class="bg-slate-50">
+                  <tr>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">ID</th>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Nome
+                      Completo</th>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Email
+                    </th>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Cargo
+                    </th>
+                    <th scope="col"
+                      class="px-5 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Status
+                    </th>
+                    <th scope="col"
+                      class="px-5 py-3 text-center text-xs font-semibold text-slate-600 uppercase tracking-wider">Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-200">
+                  <tr>
+                    <td colspan="6" class="px-5 py-4 whitespace-nowrap text-sm text-slate-500 text-center">
+                      <i data-lucide="loader-circle" class="animate-spin w-5 h-5 inline-block mr-2"></i>Carregando
+                      colaboradores...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <div id="content-scripts" class="page-content hidden">
+          <section id="section-form-script" class="bg-white p-4 md:p-6 rounded-xl shadow-lg mb-6">
+            <h2 class="text-xl font-semibold text-slate-800 mb-5 flex items-center">
+              <i data-lucide="file-plus-2" class="w-5 h-5 mr-2.5 text-sky-600"></i> Adicionar/Editar Script
+            </h2>
+            <form id="form-novo-script">
+              <input type="hidden" name="csrf_token_scripts" value="dummy_csrf_token_scripts">
+              <input type="hidden" name="script_id" id="script_id_form_scripts" value="">
+              <div class="mb-4">
+                <label for="script-titulo" class="block text-sm font-medium text-slate-700 mb-1">Título:</label>
+                <input type="text" id="script-titulo" name="titulo"
+                  class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm"
+                  required>
+              </div>
+              <div class="mb-5">
+                <label for="script-conteudo" class="block text-sm font-medium text-slate-700 mb-1">Conteúdo
+                  (SQL):</label>
+                <textarea id="script-conteudo" name="conteudo" rows="8"
+                  class="form-textarea block w-full border-slate-300 rounded-md shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm font-mono text-sm custom-scrollbar-thin"
+                  placeholder="SELECT * FROM sua_tabela WHERE condicao = 'valor';" required></textarea>
+              </div>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <button type="submit" id="btn-salvar-script"
+                  class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-all duration-150 ease-in-out active:scale-95">
+                  <i data-lucide="save" class="w-4 h-4 mr-2"></i> Salvar Script
+                </button>
+                <button type="button" id="btn-limpar-formulario-script"
+                  class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2.5 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 transition-colors"
+                  style="display: none;">
+                  <i data-lucide="rotate-ccw" class="w-4 h-4 mr-2"></i> Cancelar Edição
+                </button>
+              </div>
+            </form>
+          </section>
+
+          <section class="bg-white p-4 md:p-6 rounded-xl shadow-lg">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3">
+              <h2 class="text-xl font-semibold text-slate-800 flex items-center">
+                <i data-lucide="list-filter" class="w-5 h-5 mr-2.5 text-sky-600"></i> Scripts Salvos
+                <span id="modo-leitura-scripts-indicator" class="text-xs text-orange-600 ml-2 font-normal hidden">(Modo
+                  Somente Leitura)</span>
+              </h2>
+              <div class="relative w-full sm:w-72">
+                <input type="text" id="input-pesquisa-script" placeholder="Pesquisar scripts por título ou conteúdo..."
+                  class="form-input block w-full pl-10 pr-3 py-2.5 border-slate-300 rounded-md shadow-sm focus:border-sky-500 focus:ring-sky-500 sm:text-sm">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i data-lucide="search" class="w-5 h-5 text-slate-400"></i>
+                </div>
+              </div>
+            </div>
+            <div id="lista-scripts-container" class="overflow-x-auto custom-scrollbar-thin">
+              <table id="scripts-table" class="min-w-full divide-y divide-slate-200 border border-slate-200">
+                <thead class="bg-slate-50">
+                  <tr>
+                    <th scope="col"
+                      class="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">Título
+                    </th>
+                    <th scope="col"
+                      class="px-4 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider hidden md:table-cell">
+                      Atualizado em</th>
+                    <th scope="col"
+                      class="px-4 py-3 text-center text-xs font-medium text-slate-600 uppercase tracking-wider">Ações
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-200">
+                  <tr>
+                    <td colspan="3" class="px-4 py-4 whitespace-nowrap text-sm text-slate-500 text-center">
+                      <i data-lucide="loader-circle" class="animate-spin w-5 h-5 inline-block mr-2"></i>Carregando
+                      scripts...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <div id="footer-modals-container"></div>
+
+  <script type="module" src="./public/js/main.js"></script>
+</body>
+
+</html>

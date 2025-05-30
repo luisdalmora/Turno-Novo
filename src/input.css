@@ -1,0 +1,31 @@
+/* src/input.css */
+@import "tailwindcss";
+
+/* Suas camadas personalizadas, se necessário, viriam depois */
+/* Exemplo de como você tinha no seu input.css */
+@layer components {
+  .custom-tooltip-base {
+    /* Renomeado para evitar conflito com o do tooltipManager.js se não remover de lá */
+    @apply fixed z-[9999] px-2 py-1 text-xs font-medium text-white bg-gray-800 rounded-md shadow-sm opacity-0 invisible transition-all duration-200 ease-in-out pointer-events-none transform scale-90;
+  }
+  .custom-tooltip-base.visible {
+    @apply opacity-100 visible scale-100;
+  }
+}
+@layer utilities {
+  .custom-scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f1f1; /* ou theme('colors.slate.200') */
+    border-radius: 10px;
+  }
+  .custom-scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #c1c1c1; /* ou theme('colors.slate.400') */
+    border-radius: 10px;
+  }
+  .custom-scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #a1a1a1; /* ou theme('colors.slate.500') */
+  }
+}

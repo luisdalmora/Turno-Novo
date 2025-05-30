@@ -1,0 +1,88 @@
+<div id="password-generator-modal-backdrop"
+  class="fixed inset-0 bg-gray-800 bg-opacity-75 backdrop-blur-sm items-center justify-center hidden z-[1050] transition-opacity duration-300 ease-in-out opacity-0">
+  <div id="password-generator-modal-content"
+    class="bg-white p-6 md:p-8 rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 ease-in-out scale-95 opacity-0">
+    <div class="flex justify-between items-center mb-6">
+      <h3 class="text-xl font-semibold text-slate-800 flex items-center">
+        <i data-lucide="key-round" class="w-6 h-6 mr-2 text-sky-600"></i>Gerador de Senhas (Data/Hora)
+      </h3>
+      <button type="button" id="close-password-generator-modal-btn"
+        class="p-2 -m-2 text-slate-400 hover:text-slate-600 rounded-full transition-colors" aria-label="Fechar modal">
+        <i data-lucide="x" class="w-6 h-6"></i>
+      </button>
+    </div>
+    <div class="space-y-4">
+      <div class="flex space-x-3 mb-4">
+        <button type="button" id="senhaPayBtn"
+          class="flex-1 px-4 py-2.5 bg-sky-600 text-white font-medium rounded-lg hover:bg-sky-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500 active:scale-95 flex items-center justify-center text-sm">
+          <i data-lucide="dollar-sign" class="w-4 h-4 mr-2"></i>Gerar Senha PAY
+        </button>
+        <button type="button" id="senhaAutomacaoBtn"
+          class="flex-1 px-4 py-2.5 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 active:scale-95 flex items-center justify-center text-sm">
+          <i data-lucide="settings-2" class="w-4 h-4 mr-2"></i>Gerar Senha AUTO
+        </button>
+      </div>
+
+      <div id="senhaGeradaContainer" class="mt-4 p-4 border border-slate-300 rounded-lg bg-slate-50 hidden">
+        <p id="senhaGeradaDisplay" class="text-lg font-mono text-slate-700 text-center"></p>
+        <button type="button" id="copiarSenhaBtnModal"
+          class="mt-3 w-full px-4 py-2 bg-slate-600 text-white font-medium rounded-lg hover:bg-slate-700 ...">
+          <i data-lucide="copy" class="w-4 h-4 mr-2"></i>Copiar Senha (Data/Hora)
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 text-center mt-2">A senha gerada será ocultada automaticamente após 5 segundos.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div id="edit-collaborator-modal"
+  class="fixed inset-0 bg-slate-800 bg-opacity-60 backdrop-blur-sm items-center justify-center hidden z-[1050] p-4 transition-opacity duration-300 ease-in-out opacity-0">
+  <div
+    class="bg-white p-6 rounded-xl shadow-2xl w-full max-w-md transform transition-all duration-300 ease-in-out scale-95 opacity-0"
+    id="edit-collaborator-modal-content">
+    <form id="edit-collaborator-form">
+      <input type="hidden" id="edit-colab-id" name="colab_id">
+      <input type="hidden" id="edit-csrf-token" name="csrf_token" value="dummy_csrf_token_colab_manage_modal">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-200 mb-5">
+        <h2 class="text-xl font-semibold text-slate-800 flex items-center">
+          <i data-lucide="user-cog" class="w-5 h-5 mr-2 text-sky-600"></i>Editar Colaborador
+        </h2>
+        <button type="button"
+          class="p-1.5 -m-1.5 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors modal-close-btn-colab-edit"
+          title="Fechar">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+      <div class="space-y-4">
+        <div>
+          <label for="edit-nome_completo" class="block text-sm font-medium text-slate-700 mb-1">Nome Completo <span
+              class="text-red-500">*</span></label>
+          <input type="text" id="edit-nome_completo" name="nome_completo"
+            class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
+            required>
+        </div>
+        <div>
+          <label for="edit-email" class="text-sm font-medium text-slate-700 mb-1">Email</label>
+          <input type="email" id="edit-email" name="email"
+            class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
+        </div>
+        <div>
+          <label for="edit-cargo" class="text-sm font-medium text-slate-700 mb-1">Cargo</label>
+          <input type="text" id="edit-cargo" name="cargo"
+            class="form-input block w-full border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500 sm:text-sm">
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end gap-3">
+        <button type="button" id="cancel-edit-colab-button"
+          class="modal-close-btn-colab-edit inline-flex items-center px-4 py-2 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-500 transition-colors">
+          <i data-lucide="x-circle" class="w-4 h-4 mr-2"></i> Cancelar
+        </button>
+        <button type="submit" id="save-edit-colab-button"
+          class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-sky-500 transition-colors active:scale-95">
+          <i data-lucide="check-circle" class="w-4 h-4 mr-2"></i> Salvar Alterações
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
