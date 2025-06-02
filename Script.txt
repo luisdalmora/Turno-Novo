@@ -1,0 +1,230 @@
+-- Criação do Banco de Dados
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'Simposto')
+BEGIN
+    CREATE DATABASE Simposto;
+END
+GO
+
+USE Simposto;
+GO
+
+-- Tabela Usuarios
+-- Armazena as informações dos usuários do sistema.
+-- Login será por username e senha.
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Usuarios' and xtype='U')
+BEGIN
+    CREATE TABLE Usuarios (
+        id_usuario INT IDENTITY(1,1) PRIMARY KEY,
+        nome_completo VARCHAR(255) NOT NULL,
+        username VARCHAR(100) NOT NULL UNIQUE,
+        email VARCHAR(255) NOT NULL, -- Considere adicionar UNIQUE se o email precisar ser único.
+                                     -- Ex: CREATE UNIQUE INDEX UQ_Usuarios_Email ON Usuarios(email) WHERE email IS NOT NULL AND email <> '';
+        senha VARCHAR(255) NOT NULL, -- Lembre-se de armazenar a senha como HASH
+        data_cadastro DATETIME NOT NULL DEFAULT GETDATE()
+    );
+    PRINT 'Tabela Usuarios criada.';
+END
+ELSE
+BEGIN
+    PRINT 'Tabela Usuarios já existe.';
+END
+GO
+
+-- Tabela Colaboradores
+-- Armazena as informações dos colaboradores.
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Colaboradores' and xtype='U')
+BEGIN
+    CREATE TABLE Colaboradores (
+        id_colaborador INT IDENTITY(1,1) PRIMARY KEY,
+        nome_colaborador VARCHAR(255) NOT NULL,
+        email_colaborador VARCHAR(255) NULL,
+        cargo VARCHAR(100) NULL,
+        departamento VARCHAR(100) NULL,
+        status_colaborador VARCHAR(50) NOT NULL DEFAULT 'Ativo', -- Ex: Ativo, Inativo, Férias
+        id_usuario_cadastro INT NULL, -- Pode ser NULL se o cadastro não for atrelado a um usuário específico ou se o usuário for deletado
+        CONSTRAINT FK_Colaboradores_UsuarioCadastro FOREIGN KEY (id_usuario_cadastro) REFERENCES Usuarios(id_usuario) ON DELETE SET NULL -- Define como NULL se o usuário for deletado
+    );
+    PRINT 'Tabela Colaboradores criada.';
+END
+ELSE
+BEGIN
+    PRINT 'Tabela Colaboradores já existe.';
+END
+GO
+
+-- Tabela Tipos_Turno_Ausencia
+-- Armazena os diferentes tipos de turnos e ausências.
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Tipos_Turno_Ausencia' and xtype='U')
+BEGIN
+    CREATE TABLE Tipos_Turno_Ausencia (
+        id_tipo_turno_ausencia INT IDENTITY(1,1) PRIMARY KEY,
+        descricao_tipo VARCHAR(100) NOT NULL UNIQUE,
+        categoria_tipo VARCHAR(50) NULL, -- Ex: 'Turno de Trabalho', 'Ausência Programada', 'Ausência Não Programada', 'Atividade Laboral'
+        ativo BIT NOT NULL DEFAULT 1 -- 1 para Ativo, 0 para Inativo
+    );
+    PRINT 'Tabela Tipos_Turno_Ausencia criada.';
+END
+ELSE
+BEGIN
+    PRINT 'Tabela Tipos_Turno_Ausencia já existe.';
+END
+GO
+
+-- Tabela Turnos_Ausencias
+-- Controla os turnos de trabalho e as ausências dos colaboradores.
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='Turnos_Ausencias' and xtype='U')
+BEGIN
+    CREATE TABLE Turnos_Ausencias (
+        id_escala INT IDENTITY(1,1) PRIMARY KEY,
+        id_colaborador INT NOT NULL,
+        id_tipo_turno_ausencia INT NOT NULL,
+        data_escala DATE NOT NULL,
+        hora_inicio TIME NULL,
+        hora_fim TIME NULL,
+        observacoes VARCHAR(MAX) NULL,
+        id_usuario_criacao INT NOT NULL,
+        data_criacao DATETIME NOT NULL DEFAULT GETDATE(),
+        data_modificacao DATETIME NULL,
+
+        CONSTRAINT FK_TurnosAusencias_Colaborador FOREIGN KEY (id_colaborador) REFERENCES Colaboradores(id_colaborador) ON DELETE CASCADE, -- Se o colaborador for deletado, suas escalas também serão.
+        CONSTRAINT FK_TurnosAusencias_Tipo FOREIGN KEY (id_tipo_turno_ausencia) REFERENCES Tipos_Turno_Ausencia(id_tipo_turno_ausencia),
+        CONSTRAINT FK_TurnosAusencias_UsuarioCriacao FOREIGN KEY (id_usuario_criacao) REFERENCES Usuarios(id_usuario) ON DELETE NO ACTION -- Impede a deleção de um usuário que criou escalas (ou defina SET NULL se preferir)
+    );
+    PRINT 'Tabela Turnos_Ausencias criada.';
+END
+ELSE
+BEGIN
+    PRINT 'Tabela Turnos_Ausencias já existe.';
+END
+GO
+
+-- Tabela ScriptsSQL
+-- Armazena os scripts SQL personalizados.
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='ScriptsSQL' and xtype='U')
+BEGIN
+    CREATE TABLE ScriptsSQL (
+        id_script INT IDENTITY(1,1) PRIMARY KEY,
+        titulo_script VARCHAR(255) NOT NULL,
+        conteudo_script VARCHAR(MAX) NOT NULL,
+        id_usuario_criacao INT NOT NULL,
+        data_criacao DATETIME NOT NULL DEFAULT GETDATE(),
+        data_modificacao DATETIME NULL,
+
+        CONSTRAINT FK_ScriptsSQL_UsuarioCriacao FOREIGN KEY (id_usuario_criacao) REFERENCES Usuarios(id_usuario) ON DELETE NO ACTION -- Impede a deleção de um usuário que criou scripts (ou defina SET NULL se preferir)
+    );
+    PRINT 'Tabela ScriptsSQL criada.';
+END
+ELSE
+BEGIN
+    PRINT 'Tabela ScriptsSQL já existe.';
+END
+GO
+
+-- Tabela LogSistema
+-- Registra as atividades importantes do sistema.
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='LogSistema' and xtype='U')
+BEGIN
+    CREATE TABLE LogSistema (
+        id_log INT IDENTITY(1,1) PRIMARY KEY,
+        data_ocorrencia DATETIME NOT NULL DEFAULT GETDATE(),
+        nivel VARCHAR(50) NOT NULL, -- Ex: INFO, WARNING, ERROR, DEBUG, AUDIT
+        id_usuario INT NULL, -- NULL se a ação for do sistema ou não rastreável a um usuário específico
+        acao VARCHAR(255) NOT NULL, -- Ex: 'LOGIN_SUCESSO', 'USUARIO_CRIADO', 'COLABORADOR_ATUALIZADO', 'ERRO_SISTEMA'
+        tabela_afetada VARCHAR(128) NULL, -- Nome da tabela principal afetada pela ação
+        id_registro_afetado VARCHAR(255) NULL, -- Pode ser um INT ou VARCHAR dependendo da chave da tabela
+        descricao TEXT NULL, -- Detalhes adicionais, como valores antigos/novos, mensagens de erro, IP, etc.
+        CONSTRAINT FK_LogSistema_Usuario FOREIGN KEY (id_usuario) REFERENCES Usuarios(id_usuario) ON DELETE SET NULL
+    );
+    PRINT 'Tabela LogSistema criada.';
+END
+ELSE
+BEGIN
+    PRINT 'Tabela LogSistema já existe.';
+END
+GO
+
+----------------------------------------------------
+-- INSERTS INICIAIS PARA Tipos_Turno_Ausencia
+----------------------------------------------------
+-- Verifica se os dados já existem para evitar duplicidade
+IF NOT EXISTS (SELECT 1 FROM Tipos_Turno_Ausencia WHERE descricao_tipo = 'Turno Regular')
+BEGIN
+    INSERT INTO Tipos_Turno_Ausencia (descricao_tipo, categoria_tipo, ativo) VALUES
+    ('Turno Regular', 'Turno de Trabalho', 1),
+    ('Folga Semanal', 'Ausência Programada', 1),
+    ('Férias', 'Ausência Programada', 1),
+    ('Atestado Médico', 'Ausência Justificada', 1),
+    ('Consulta Odontológica', 'Ausência Justificada', 1),
+    ('Implantação de Sistema', 'Atividade Laboral', 1),
+    ('Mal-estar', 'Ausência Não Programada', 1),
+    ('Licença Maternidade/Paternidade', 'Ausência Programada', 1),
+    ('Licença Não Remunerada', 'Ausência Programada', 1),
+    ('Treinamento', 'Atividade Laboral', 1),
+    ('Compensação Horas', 'Ausência Programada', 1),
+    ('Turno Extra', 'Turno de Trabalho', 1);
+    PRINT 'Dados iniciais inseridos em Tipos_Turno_Ausencia.';
+END
+ELSE
+BEGIN
+    PRINT 'Dados iniciais em Tipos_Turno_Ausencia já existem.';
+END
+GO
+
+-- Trigger para data_modificacao na tabela Turnos_Ausencias
+IF OBJECT_ID('TRG_TurnosAusencias_UpdateModificacao', 'TR') IS NOT NULL
+BEGIN
+    DROP TRIGGER TRG_TurnosAusencias_UpdateModificacao;
+    PRINT 'Trigger TRG_TurnosAusencias_UpdateModificacao existente removido.';
+END
+GO
+
+CREATE TRIGGER TRG_TurnosAusencias_UpdateModificacao
+ON Turnos_Ausencias
+AFTER UPDATE
+AS
+BEGIN
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+
+    UPDATE ta
+    SET data_modificacao = GETDATE()
+    FROM Turnos_Ausencias ta
+    INNER JOIN inserted i ON ta.id_escala = i.id_escala;
+END;
+GO
+PRINT 'Trigger TRG_TurnosAusencias_UpdateModificacao criado/atualizado.';
+GO
+
+-- Trigger para data_modificacao na tabela ScriptsSQL
+IF OBJECT_ID('TRG_ScriptsSQL_UpdateModificacao', 'TR') IS NOT NULL
+BEGIN
+    DROP TRIGGER TRG_ScriptsSQL_UpdateModificacao;
+    PRINT 'Trigger TRG_ScriptsSQL_UpdateModificacao existente removido.';
+END
+GO
+
+CREATE TRIGGER TRG_ScriptsSQL_UpdateModificacao
+ON ScriptsSQL
+AFTER UPDATE
+AS
+BEGIN
+    IF TRIGGER_NESTLEVEL() > 1
+        RETURN;
+
+    UPDATE ss
+    SET data_modificacao = GETDATE()
+    FROM ScriptsSQL ss
+    INNER JOIN inserted i ON ss.id_script = i.id_script;
+END;
+GO
+PRINT 'Trigger TRG_ScriptsSQL_UpdateModificacao criado/atualizado.';
+GO
+
+PRINT '----------------------------------------------------';
+PRINT 'Script de criação do banco e tabelas concluído.';
+PRINT 'Banco de dados: Simposto';
+PRINT 'Tabelas verificadas/criadas: Usuarios, Colaboradores, Tipos_Turno_Ausencia, Turnos_Ausencias, ScriptsSQL, LogSistema.';
+PRINT 'Tipos_Turno_Ausencia populada com dados iniciais (se não existiam).';
+PRINT 'Triggers de atualização de data_modificacao criados/atualizados para Turnos_Ausencias e ScriptsSQL.';
+PRINT '----------------------------------------------------';
+GO
