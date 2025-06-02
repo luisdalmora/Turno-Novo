@@ -40,6 +40,7 @@ function initializeAppEventListeners() {
   initDashboardUI();
   initReportsPage();
   initCollaboratorsPage(); // Esta função agora cuida de todos os listeners do modal de colaborador
+  initScriptsPage();
   // initPasswordGeneratorModal(); // Chamada ao abrir o modal
 
   // --- Controles Globais de Modais (apenas Password Generator agora) ---
